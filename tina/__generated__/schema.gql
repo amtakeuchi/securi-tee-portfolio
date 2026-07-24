@@ -127,6 +127,10 @@ type Post implements Node & Document {
   date: String!
   author: String
   featuredImage: String
+  featured: Boolean
+  track: String
+  proof: String
+  cardTitle: String
   body: JSON
   id: ID!
   _sys: SystemInfo!
@@ -155,12 +159,21 @@ input ImageFilter {
   in: [String]
 }
 
+input BooleanFilter {
+  eq: Boolean
+  exists: Boolean
+}
+
 input PostFilter {
   title: StringFilter
   excerpt: StringFilter
   date: DatetimeFilter
   author: StringFilter
   featuredImage: ImageFilter
+  featured: BooleanFilter
+  track: StringFilter
+  proof: StringFilter
+  cardTitle: StringFilter
   body: RichTextFilter
 }
 
@@ -182,6 +195,11 @@ type Project implements Node & Document {
   description: String
   liveLink: String
   repoLink: String
+  date: String
+  featured: Boolean
+  track: String
+  proof: String
+  cardTitle: String
   body: JSON
   id: ID!
   _sys: SystemInfo!
@@ -195,6 +213,11 @@ input ProjectFilter {
   description: StringFilter
   liveLink: StringFilter
   repoLink: StringFilter
+  date: DatetimeFilter
+  featured: BooleanFilter
+  track: StringFilter
+  proof: StringFilter
+  cardTitle: StringFilter
   body: RichTextFilter
 }
 
@@ -246,6 +269,10 @@ input PostMutation {
   date: String
   author: String
   featuredImage: String
+  featured: Boolean
+  track: String
+  proof: String
+  cardTitle: String
   body: JSON
 }
 
@@ -256,6 +283,11 @@ input ProjectMutation {
   description: String
   liveLink: String
   repoLink: String
+  date: String
+  featured: Boolean
+  track: String
+  proof: String
+  cardTitle: String
   body: JSON
 }
 

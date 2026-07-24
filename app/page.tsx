@@ -1,11 +1,14 @@
 import { Hero } from "./components/Hero";
 import { ScrollReveal } from "./components/ScrollReveal";
 import { RecentWorkFeed } from "./components/RecentWorkFeed";
+import { getFeaturedWork } from "./lib/featured-work";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const writeups = await getFeaturedWork();
+
   return (
     <>
-      <Hero />
+      <Hero writeups={writeups} />
       <ScrollReveal />
 
       {/* ============ pillars ============ */}
@@ -70,7 +73,7 @@ export default function HomePage() {
       </section>
 
       {/* ============ recent work: featured from blog + projects ============ */}
-      <RecentWorkFeed />
+      <RecentWorkFeed writeups={writeups} />
 
       {/* ============ about ============ */}
       <section className="block reveal" id="about" aria-labelledby="about-title">

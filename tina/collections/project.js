@@ -43,6 +43,35 @@ export default {
       label: "Repository Link",
     },
     {
+      type: "datetime",
+      name: "date",
+      label: "Date",
+    },
+    {
+      type: "boolean",
+      name: "featured",
+      label: "Featured on homepage",
+      description: "Show this in the homepage highlight strip (hero + recent work)",
+    },
+    {
+      type: "string",
+      name: "track",
+      label: "Track",
+      options: ["offense", "defense", "tooling"],
+    },
+    {
+      type: "string",
+      name: "proof",
+      label: "Homepage proof line",
+      description: "Short stat/hook shown only on the homepage highlight card, e.g. '5 vulns found and fixed'",
+    },
+    {
+      type: "string",
+      name: "cardTitle",
+      label: "Homepage card title",
+      description: "Optional short title for the homepage highlight card. Falls back to the title above if left blank.",
+    },
+    {
       type: "rich-text",
       name: "body",
       label: "Body",

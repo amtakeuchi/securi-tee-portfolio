@@ -65,6 +65,30 @@ var post_default = {
       name: "featuredImage"
     },
     {
+      type: "boolean",
+      label: "Featured on homepage",
+      name: "featured",
+      description: "Show this in the homepage highlight strip (hero + recent work)"
+    },
+    {
+      type: "string",
+      label: "Track",
+      name: "track",
+      options: ["offense", "defense", "tooling"]
+    },
+    {
+      type: "string",
+      label: "Homepage proof line",
+      name: "proof",
+      description: "Short stat/hook shown only on the homepage highlight card, e.g. '5 vulns found and fixed'"
+    },
+    {
+      type: "string",
+      label: "Homepage card title",
+      name: "cardTitle",
+      description: "Optional short title for the homepage highlight card. Falls back to the title above if left blank."
+    },
+    {
       type: "rich-text",
       label: "Blog Post Body",
       name: "body",
@@ -121,6 +145,35 @@ var project_default = {
       label: "Repository Link"
     },
     {
+      type: "datetime",
+      name: "date",
+      label: "Date"
+    },
+    {
+      type: "boolean",
+      name: "featured",
+      label: "Featured on homepage",
+      description: "Show this in the homepage highlight strip (hero + recent work)"
+    },
+    {
+      type: "string",
+      name: "track",
+      label: "Track",
+      options: ["offense", "defense", "tooling"]
+    },
+    {
+      type: "string",
+      name: "proof",
+      label: "Homepage proof line",
+      description: "Short stat/hook shown only on the homepage highlight card, e.g. '5 vulns found and fixed'"
+    },
+    {
+      type: "string",
+      name: "cardTitle",
+      label: "Homepage card title",
+      description: "Optional short title for the homepage highlight card. Falls back to the title above if left blank."
+    },
+    {
       type: "rich-text",
       name: "body",
       label: "Body",
@@ -166,6 +219,9 @@ var config = defineConfig({
   // Use local mode for admin to avoid CORS issues
   localApi: true
 });
+if (false) {
+  console.warn("[tina] No TINA_TOKEN found \u2014 admin panel will not authenticate in production.");
+}
 var config_default = config;
 export {
   config,

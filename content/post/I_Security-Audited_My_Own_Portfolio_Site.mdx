@@ -3,6 +3,10 @@ title: I Security-Audited My Own Portfolio Site - Here's What I Found
 excerpt: 'Everyone in tech has a portfolio site. Almost nobody audits theirs. I ran three layers of security testing on mine — manual code review, SAST with Semgrep, and DAST with OWASP ZAP — and found an exposed CMS token, an SSRF vulnerability, a CORS wildcard, an open proxy, and zero security headers. Here''s what I found, what I fixed, and why you should audit yours too.'
 date: 2026-03-28T05:00:00.000Z
 featuredImage: /uploads/Gemini_Generated_Image_o86a45o86a45o86a.png
+featured: true
+track: offense
+proof: '5 vulns found and fixed · zero findings on app code after'
+cardTitle: i security-audited my own portfolio site
 ---
 
 "Hi my name is X, I'm X years old, and I'm a X professional! Check out my portfolio site to see what I've done!" Everyone knows this story, because a huge chunk of people in tech have a portfolio site displaying everything they've done. Heck, even people out of tech — marketing, creative fields, finance, you name it. Now here's the thing... how many of these people actually update their portfolio sites? No, not with new projects or interesting creations. I'm talking about the code. The skeleton of the site. What actually makes it up and what's vulnerable to exploitation if it's been done poorly or incorrectly.

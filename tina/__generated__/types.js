@@ -19,6 +19,10 @@ export const PostPartsFragmentDoc = gql`
   date
   author
   featuredImage
+  featured
+  track
+  proof
+  cardTitle
   body
 }
     `;
@@ -31,6 +35,11 @@ export const ProjectPartsFragmentDoc = gql`
   description
   liveLink
   repoLink
+  date
+  featured
+  track
+  proof
+  cardTitle
   body
 }
     `;

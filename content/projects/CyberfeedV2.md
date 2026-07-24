@@ -4,6 +4,11 @@ category: Python Projects
 thumbnail: /uploads/cyberfeed_v2_dashboard.png
 description: 'A personal intelligence dashboard that pulls from 37+ RSS feeds across cybersecurity, tech, finance, and world news, scores every article by importance, and lets you filter by topic, region, and time. Built with Python and Flask, runs locally, and optionally uses Claude''s API to generate 2-sentence summaries for each article. Went from checking a dozen news sites daily to scanning everything that matters in 10 minutes flat.'
 repoLink: 'https://github.com/amtakeuchi/cyberfeed_v2'
+date: 2026-03-01T00:00:00.000Z
+featured: true
+track: tooling
+proof: 'a dozen sites daily · down to 10 minutes flat'
+cardTitle: 'cyberfeed v2: a personal intelligence dashboard'
 ---
 
 I spend a lot of time reading the news. Cybersecurity news, tech news, finance, world events, Canadian headlines. If you work in cybersecurity (or honestly any tech field), staying current isn't optional. The threat landscape changes daily. New vulnerabilities drop. Breaches happen. Markets shift. Geopolitical events reshape the attack surface overnight. You need to know what's going on.

@@ -40,6 +40,30 @@ export default {
       name: "featuredImage",
     },
     {
+      type: "boolean",
+      label: "Featured on homepage",
+      name: "featured",
+      description: "Show this in the homepage highlight strip (hero + recent work)",
+    },
+    {
+      type: "string",
+      label: "Track",
+      name: "track",
+      options: ["offense", "defense", "tooling"],
+    },
+    {
+      type: "string",
+      label: "Homepage proof line",
+      name: "proof",
+      description: "Short stat/hook shown only on the homepage highlight card, e.g. '5 vulns found and fixed'",
+    },
+    {
+      type: "string",
+      label: "Homepage card title",
+      name: "cardTitle",
+      description: "Optional short title for the homepage highlight card. Falls back to the title above if left blank.",
+    },
+    {
       type: "rich-text",
       label: "Blog Post Body",
       name: "body",

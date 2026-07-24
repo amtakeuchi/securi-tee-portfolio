@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { WRITEUPS } from "../content/featured-work";
+import type { Writeup } from "../lib/featured-work";
 
 const GLYPHS = "!<>-_\\/[]{}—=+*^?#________";
 function rglyph() {
@@ -77,7 +77,7 @@ const DECODE_LINES = [
   { key: "hook", text: "i break things to learn how they hold, then build them back harder.", delay: 1300 },
 ] as const;
 
-export function Hero() {
+export function Hero({ writeups }: { writeups: Writeup[] }) {
   const kanjiRef = useRef<HTMLSpanElement>(null);
   const typeRef = useRef<HTMLSpanElement>(null);
   const h1Ref = useRef<HTMLHeadingElement>(null);
@@ -204,7 +204,7 @@ export function Hero() {
           </span>
         </p>
         <nav className="hero-proof" aria-label="recent work" ref={proofRef}>
-          {WRITEUPS.map((w) => (
+          {writeups.map((w) => (
             <a key={w.href} data-track={w.track} href={w.href}>
               <span className="mark" aria-hidden="true">{w.track}</span>
               {w.title}

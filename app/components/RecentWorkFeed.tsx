@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { WRITEUPS, type Track } from "../content/featured-work";
+import type { Track, Writeup } from "../lib/featured-work";
 
 const FILTERS: { key: "all" | Track; label: string }[] = [
   { key: "all", label: "all" },
@@ -11,9 +11,9 @@ const FILTERS: { key: "all" | Track; label: string }[] = [
   { key: "tooling", label: "tooling" },
 ];
 
-export function RecentWorkFeed() {
+export function RecentWorkFeed({ writeups }: { writeups: Writeup[] }) {
   const [filter, setFilter] = useState<"all" | Track>("all");
-  const rows = WRITEUPS.filter((w) => filter === "all" || w.track === filter);
+  const rows = writeups.filter((w) => filter === "all" || w.track === filter);
 
   return (
     <section className="block reveal" id="recent" aria-labelledby="recent-title">
@@ -41,7 +41,7 @@ export function RecentWorkFeed() {
           {rows.map((w) => (
             <a key={w.href} className="writeup" data-track={w.track} href={w.href}>
               <span className="date">
-                {w.date} &middot; {w.kind} &middot; {w.track}
+                {w.date.slice(0, 7)} &middot; {w.kind} &middot; {w.track}
               </span>
               <span>
                 <h3>{w.title}</h3>
