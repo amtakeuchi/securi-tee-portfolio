@@ -1,0 +1,98 @@
+# CI test pipeline for securi-tee.com
+# Runs on every push to main and on every pull request.
+# 8 checks: typecheck, status codes, eslint, security headers,
+# CORS round-trip, admin panel, blog auto-discovery, dead link crawler.
+#
+# The pipeline:
+#   1. Installs deps
+#   2. Runs tsc + eslint (no server needed)
+#   3. Builds the site (tinacms build && next build)
+#   4. Starts the production server in the background
+#   5. Waits for it to be ready
+#   6. Runs ci-test.py against it
+#   7. Tears down the server
+
+name: CI Test Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      NEXT_PUBLIC_TINA_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_TINA_CLIENT_ID }}
+      TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
+
+    steps:
+      # --- Setup ---
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python deps
+        run: pip install requests
+
+      - name: Install Node deps
+        run: npm ci
+
+      # --- Pre-build checks (no server needed) ---
+      - name: Typecheck + ESLint + env vars
+        run: python3 scripts/ci-test.py --skip-server
+
+      # --- Build ---
+      - name: Build site
+        run: npm run build
+        env:
+          NEXT_PUBLIC_TINA_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_TINA_CLIENT_ID }}
+          TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
+
+      # --- Start server and test ---
+      - name: Start production server
+        run: npm run start &
+        env:
+          NEXT_PUBLIC_TINA_CLIENT_ID: ${{ secrets.NEXT_PUBLIC_TINA_CLIENT_ID }}
+          TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
+          PORT: 3000
+
+      - name: Wait for server
+        run: |
+          echo "Waiting for server to be ready..."
+          for i in $(seq 1 30); do
+            if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
+              echo "Server is ready (attempt $i)"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Server did not become ready in 60 seconds"
+          exit 1
+
+      - name: Run CI test suite
+        run: python3 scripts/ci-test.py --base-url http://localhost:3000
+
+      # --- Cleanup ---
+      - name: Stop server
+        if: always()
+        run: |
+          # Kill any next-server process
+          pkill -f "next start" || true
+          pkill -f "next-server" || true
