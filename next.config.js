@@ -12,6 +12,12 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    // Tina's static admin panel lives at /admin/index.html (public/admin/index.html,
+    // rebuilt by `tinacms build`). There's no app/admin page, so without this the
+    // bare /admin URL 404s.
+    return [{ source: '/admin', destination: '/admin/index.html' }];
+  },
   async headers() {
     // React fast-refresh / HMR needs 'unsafe-eval' in `next dev`; production stays strict (no eval).
     const devEval = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";

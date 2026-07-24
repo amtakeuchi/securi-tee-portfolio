@@ -9,7 +9,7 @@ export const config = defineConfig({
     process.env.NEXT_PUBLIC_TINA_BRANCH || // custom branch env override
     process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF || // Vercel branch env
     "main", // fallback
-  token: process.env.TINA_TOKEN || process.env.NEXT_PUBLIC_TINA_TOKEN || "local",
+  token: process.env.TINA_TOKEN || "local",
   media: {
     tina: {
       publicFolder: "public",
@@ -27,7 +27,7 @@ export const config = defineConfig({
   localApi: process.env.NODE_ENV === 'development',
 });
 
-if (process.env.NODE_ENV === 'production' && !process.env.TINA_TOKEN && !process.env.NEXT_PUBLIC_TINA_TOKEN) {
+if (process.env.NODE_ENV === 'production' && !process.env.TINA_TOKEN) {
   console.warn('[tina] No TINA_TOKEN found — admin panel will not authenticate in production.');
 }
 

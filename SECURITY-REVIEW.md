@@ -127,7 +127,121 @@ CSP definitions, negative lookahead, dev-only unsafe-eval, security headers. All
 - Blog/projects page typing refactor (removing eslint-disable any)
 - Hero timing refactor (use onDone callback instead of estimate — cosmetic)
 
+## Environment variable cleanup (July 24, 2026)
+
+### NEXT_PUBLIC_TINA_TOKEN fallback removed (code)
+
+`tina/config.js` had a fallback chain: `process.env.TINA_TOKEN || process.env.NEXT_PUBLIC_TINA_TOKEN || "local"`. The `NEXT_PUBLIC_TINA_TOKEN` fallback was a trap: any env var prefixed with `NEXT_PUBLIC_` gets inlined into the client bundle and shipped to every browser. If `TINA_TOKEN` was ever unset and `NEXT_PUBLIC_TINA_TOKEN` was set, the read/write token would silently leak to the public.
+
+Fix: removed the `NEXT_PUBLIC_TINA_TOKEN` fallback from both the token config (line 12) and the production warning check (line 30). Config now reads only `TINA_TOKEN` (server-side) and falls back to "local". Zero references to `NEXT_PUBLIC_TINA_TOKEN` remain in the repo.
+
+Verified against TinaCMS docs (https://tina.io/docs/reference/config): `TINA_TOKEN` is documented as "Site build only — Read-only token for TinaCloud (not exposed in admin)." `NEXT_PUBLIC_TINA_TOKEN` is not a Tina-sanctioned variable and does not appear in their environment variables table.
+
+### Vercel environment variable changes
+
+Actions taken in Vercel dashboard:
+
+1. **NEXT_PUBLIC_TINA_TOKEN** — DELETED from Vercel. Not a Tina-sanctioned variable. Would ship the read token to the browser if inlined. Dangerous regardless of code patch.
+
+2. **TINA_TOKEN** — Marked as Sensitive in Vercel (clears the "Needs Attention" flag). Value is now masked in the dashboard, only exposed to builds. Also scoped to Production environment only, since the site deploys only from the main branch and preview deployments don't need Tina admin auth.
+
+3. **TINA_VERCEL_TOKEN** — DELETED from Vercel. Dead variable: not referenced in repo code, not in Tina's docs, not a Vercel system variable (verified against https://vercel.com/docs/environment-variables/system-environment-variables), and no GitHub Actions workflow exists that would use it. Leftover from initial setup.
+
+### Variables kept as-is
+
+- `NEXT_PUBLIC_TINA_CLIENT_ID` — public by design (Tina docs: "Site + Admin"). Identifies the project, like a username. Keep in all environments.
+- `NEXT_PUBLIC_TINA_BRANCH` — public value, tells Tina which git branch to use. Keep.
+- `NEXT_PUBLIC_ORGANIZATION_NAME` — public display name. Keep.
+- `NEXT_PUBLIC_SHOW_EDIT_BTN` — boolean toggle. Keep.
+- `NEXT_PUBLIC_USE_LOCAL_CLIENT` — boolean toggle. Keep.
+
+### Environment scoping note
+
+`TINA_TOKEN` is now scoped to Production only. If preview deployments (non-main branch pushes) ever need the Tina admin panel to authenticate, `TINA_TOKEN` will need to be added to the Preview environment as well. The public vars (`NEXT_PUBLIC_TINA_CLIENT_ID`, `NEXT_PUBLIC_TINA_BRANCH`) remain in all environments since they're needed at build time regardless.
+
+---
+
 ## Residual risk (named, accepted)
 
 - Hero animation stalling in a specific browser edge case. Conservative timing estimates make this unlikely. Tested in Chrome; Safari/Firefox testing needed after any hero change.
 - Featured items sorting to the bottom if date is missing. Mitigated by always setting a date on featured items.
+- Preview deploys won't have Tina admin auth (TINA_TOKEN is Production-only). Accepted: site content still builds from local MDX files, only the admin editor is affected on preview URLs.
+- CSP 'unsafe-inline' in script-src (next.config.js line 20). Removing it requires nonce-based CSP via middleware, which is a project-level change. Named as residual risk: no inline scripts are currently user-influenceable, but a security-conscious reviewer checking CSP headers would flag it. Address when you have an afternoon.
+- Formspree form ID hardcoded in client bundle (contact/page.tsx line 16). Public by design. Fix is a Formspree dashboard setting: set allowed domains to securi-tee.com to block other sites from using the endpoint. No code change needed.
+- Blog posts queried as .mdx, projects as .md (hardcoded extensions). If a .mdx project or .md blog post is created through Tina admin, the dynamic route will 404. All current content uses the correct extensions. Address if you start mixing formats.
+
+---
+
+## Second premortem + ponytail (July 24, 2026)
+
+Full codebase re-read after the env var cleanup. Premortem surfaced 6 failure modes, ponytail triaged each file.
+
+### Premortem (6 months from now, the site has failed)
+
+**Failure 1: Formspree form ID is hardcoded in the client bundle**
+Likelihood: LOW. Danger: MEDIUM.
+The Formspree endpoint at `app/contact/page.tsx` line 16 is a public identifier by design. Anyone who reads the source can send spam through the form from any origin. Formspree has domain restrictions and rate limiting on their dashboard. Fix: configure allowed domains on Formspree, not code.
+Early warning: spam through the contact form, or Formspree usage limits hit unexpectedly.
+Status: DASHBOARD FIX (no code change).
+
+**Failure 2: Tina API route builds URL with unvalidated NEXT_PUBLIC_TINA_CLIENT_ID**
+Likelihood: LOW. Danger: HIGH (theoretically).
+The API route at `app/api/tina/[...path]/route.ts` constructs the URL using `NEXT_PUBLIC_TINA_CLIENT_ID` without checking it's non-empty. If the env var is ever unset (misconfigured preview deploy), the URL becomes `https://identity.tinajs.io/v2/apps//token` which returns a 404. Not a security issue, but the error path doesn't explain why. The ALLOWED_PATHS validation on the path portion is correct and solid.
+Early warning: Tina admin auth failing silently in any environment without NEXT_PUBLIC_TINA_CLIENT_ID.
+Status: NAMED RESIDUAL (no fix needed, the failure mode is a 404 not a vulnerability).
+
+**Failure 3: Contact form error handling used alert()**
+Likelihood: MEDIUM. Danger: LOW (UX).
+alert() blocks on mobile, behaves inconsistently across browsers, and is jarring on a polished site. No inline error display existed.
+Early warning: users report the form "doesn't work" when it silently fails after the alert is dismissed.
+Status: FIXED.
+
+**Failure 4: ProjectFullscreenImage modal lacked keyboard accessibility**
+Likelihood: MEDIUM. Danger: MEDIUM (WCAG gap on a security portfolio).
+The component had no keyboard handler (Enter/Space to open, Escape to close), no focus trap, no ARIA attributes, no focus restoration. Keyboard users were stuck.
+Early warning: any accessibility audit tool flags this component.
+Status: FIXED (component deleted, was dead code not imported anywhere).
+
+**Failure 5: Project content files use .md but blog uses .mdx (hardcoded extensions)**
+Likelihood: LOW. Danger: LOW.
+`app/projects/[slug]/page.tsx` line 23 hardcodes `.md`. `app/blog/[slug]/page.tsx` line 56 hardcodes `.mdx`. If someone creates a project as .mdx through Tina admin, the project route 404s. All current content uses the correct extension.
+Early warning: a project created through Tina admin doesn't render.
+Status: NAMED RESIDUAL (address if you start mixing formats).
+
+**Failure 6: No CSP nonce on inline scripts (unsafe-inline in script-src)**
+Likelihood: MEDIUM. Danger: MEDIUM (CSP weakening on a security portfolio).
+`next.config.js` line 20 has `'unsafe-inline'` in script-src for the main site CSP. This defeats the XSS protection CSP provides for scripts. The admin CSP needs it (Tina's SPA uses inline scripts), but the main site could use nonces. Fixing it requires middleware-generated nonces, which is a project-level change.
+Early warning: a security reviewer or recruiter checks CSP headers and flags 'unsafe-inline'.
+Status: NAMED RESIDUAL (address when you have an afternoon).
+
+### Ponytail (the lazy senior dev review)
+
+1. **app/api/tina/[...path]/route.ts** — GET and POST are 90% duplicated. A shared helper would halve the file. But 104 lines is manageable, the duplication is obvious, and adding an abstraction adds indirection. LEAVE.
+
+2. **app/projects/[slug]/ProjectFullscreenImage.tsx** — 52 lines of dead code, not imported anywhere, with an accessibility gap. DELETED.
+
+3. **app/contact/page.tsx — alert() for errors** — Replaced with inline error state (`showError`), same pattern as `showThankYou`. 5 lines, no new dependencies. FIXED.
+
+4. **app/contact/page.tsx — hardcoded Formspree ID** — Public by design, same as NEXT_PUBLIC_TINA_CLIENT_ID. Moving to env var doesn't add security. Fix is on Formspree dashboard (domain restrictions). LEAVE.
+
+5. **app/lib/featured-work.ts — FALLBACK_TRACK default** — Items without track get "tooling". Reasonable default, surfacing is better than hiding. LEAVE.
+
+6. **next.config.js — 'unsafe-inline' in script-src** — Real but project-level fix (nonce middleware). Named as residual risk. LEAVE FOR NOW.
+
+7. **app/blog/page.tsx and app/projects/page.tsx — eslint-disable any** — Same call as first review. Works, not worth the diff until a typing pass. LEAVE.
+
+8. **app/work/page.tsx — count helper** — Still slightly overbuilt, still not worth the diff. LEAVE.
+
+9. **app/blog/[slug]/page.tsx — .mdx hardcode** — Matches all current blog content. LEAVE.
+
+### Fixes implemented (second pass)
+
+1. **ProjectFullscreenImage.tsx deleted** — 52 lines of dead code removed. Component was not imported anywhere. Accessibility gap eliminated with it.
+
+2. **Contact form alert() replaced** — `app/contact/page.tsx`: added `showError` state, inline error display with `role="alert"` for screen readers. No more native browser dialog.
+
+### Fixes deferred (second pass)
+
+- CSP nonce-based script-src (Failure 6 — project-level middleware change)
+- Formspree domain restrictions (Failure 1 — Formspree dashboard, not code)
+- Blog/projects extension consistency (Failure 5 — address if formats ever mix)

@@ -5,6 +5,7 @@ import React, { useState, useRef } from "react";
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const [showError, setShowError] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -21,7 +22,7 @@ export default function ContactPage() {
       setShowThankYou(true);
       formRef.current?.reset();
     } catch (_err) {
-      alert("something broke sending that. try again, or email me directly.");
+      setShowError(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -45,6 +46,13 @@ export default function ContactPage() {
           <p className="form-ok">
             <span className="ps1">$</span> sent. thanks for reaching out, i&apos;ll get
             back to you soon.
+          </p>
+        )}
+
+        {showError && (
+          <p className="form-ok" role="alert">
+            <span className="ps1">$</span> something broke sending that. try again, or
+            email me directly.
           </p>
         )}
 
