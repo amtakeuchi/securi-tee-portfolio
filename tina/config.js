@@ -11,12 +11,6 @@ export const config = defineConfig({
     "main", // fallback
   token: process.env.TINA_TOKEN || process.env.NEXT_PUBLIC_TINA_TOKEN || "local",
   media: {
-    // If you wanted cloudinary do this
-    // loadCustomStore: async () => {
-    //   const pack = await import("next-tinacms-cloudinary");
-    //   return pack.TinaCloudCloudinaryMediaStore;
-    // },
-    // this is the config for the tina cloud media store
     tina: {
       publicFolder: "public",
       mediaRoot: "uploads",
