@@ -11,8 +11,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>securi-tee &middot; adam takeuchi</title>
+        <title>securi-tee</title>
         <meta name="description" content="adam takeuchi. cybersecurity analyst. security as a profession, security as a way of being." />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
