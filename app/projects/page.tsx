@@ -26,8 +26,8 @@ export default async function ProjectsPage() {
           </p>
           <h1>projects</h1>
           <p className="page-lead">
-            tools and labs i built to prove i could do the job, not just talk about
-            it. source is on github where it makes sense.
+            tools, labs, and audits. some new, some reworked. source is on github
+            where it makes sense.
           </p>
         </header>
 

@@ -34,8 +34,8 @@ export default async function BlogPage() {
           </p>
           <h1>blog</h1>
           <p className="page-lead">
-            field notes from the two chairs. breaking things, then writing down how
-            they held. no polish, just what actually happened.
+            what breaks, what ships, what helps, and what i&apos;m still figuring out.
+            no polish, just what actually happened.
           </p>
         </header>
 
