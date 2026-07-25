@@ -113,17 +113,24 @@ export function Hero({ writeups }: { writeups: Writeup[] }) {
       );
     }
 
-    // stream-decode the three hero lines, then reveal proof + cta
+    // stream-decode the three hero lines, then reveal proof + cta once all
+    // three have actually finished (not a guessed time — actual decode speed
+    // varies enough on slower devices that a time estimate reveals early).
     const fxRefs = { name: nameFxRef, role: roleFxRef, hook: hookFxRef };
     const containerRefs = { name: h1Ref, role: h1Ref, hook: subRef };
-    let maxTime = 0;
+    let doneCount = 0;
+
+    function onLineDone() {
+      doneCount++;
+      if (doneCount >= DECODE_LINES.length && live) {
+        proofRef.current?.classList.add("reveal");
+        ctaRef.current?.classList.add("reveal");
+      }
+    }
 
     DECODE_LINES.forEach((line) => {
       const fx = fxRefs[line.key].current;
       if (!fx) return;
-      const nonSpace = line.text.replace(/\s/g, "").length;
-      const estTime = line.delay + nonSpace * 15 + nonSpace * 25;
-      if (estTime > maxTime) maxTime = estTime;
 
       timers.push(
         setTimeout(() => {
@@ -136,20 +143,13 @@ export function Hero({ writeups }: { writeups: Writeup[] }) {
             onDone: () => {
               fx.classList.add("settled");
               timers.push(setTimeout(() => fx.classList.remove("settled"), 400));
+              onLineDone();
             },
           });
           cancels.push(cancel);
         }, line.delay)
       );
     });
-
-    timers.push(
-      setTimeout(() => {
-        if (!live) return;
-        proofRef.current?.classList.add("reveal");
-        ctaRef.current?.classList.add("reveal");
-      }, maxTime + 60)
-    );
 
     // kanji rgb-split glitch: first hit ~1.1s in, then every 3.2-4.9s
     const kanji = kanjiRef.current;
