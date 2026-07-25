@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Hero } from "./components/Hero";
 import { ScrollReveal } from "./components/ScrollReveal";
 import { RecentWorkFeed } from "./components/RecentWorkFeed";
@@ -99,6 +100,11 @@ export default async function HomePage() {
               <p>
                 i want to know it all. how it works, what it can do, what it can&apos;t
                 do, what breaks it, what it can be reborn as.
+              </p>
+              <p>
+                <Link className="text-link" href="/about">
+                  the full story <span className="arrow" aria-hidden="true">&rarr;</span>
+                </Link>
               </p>
               <p className="about-quiet">
                 <span className="take" lang="ja">安</span> &middot; security as a profession, security as a way of being.
