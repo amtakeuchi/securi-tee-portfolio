@@ -28,33 +28,31 @@ export default async function WorkPage() {
           </p>
           <h1>work</h1>
           <p className="page-lead">
-            two shelves. writeups on what i broke and what i held, and the builds i
-            shipped. pick one.
+            everything i&apos;ve written, and everything i&apos;ve built. take your pick.
           </p>
         </header>
 
         <div className="feed">
-          <Link className="writeup" data-track="offense" href="/blog">
+          <Link className="writeup" href="/blog">
             <span className="date">
               {posts.length} post{posts.length === 1 ? "" : "s"}
             </span>
             <span>
               <h3>blog</h3>
               <p>
-                field notes from the two chairs. breaking things, then writing down
-                how they held.
+                what breaks, what ships, what helps, and what i&apos;m still figuring out.
               </p>
             </span>
             <span className="go" aria-hidden="true">&rarr;</span>
           </Link>
 
-          <Link className="writeup" data-track="tooling" href="/projects">
+          <Link className="writeup" href="/projects">
             <span className="date">
               {projects.length} project{projects.length === 1 ? "" : "s"}
             </span>
             <span>
               <h3>projects</h3>
-              <p>tools and labs i built to prove i could do the job, not just talk about it.</p>
+              <p>tools, labs, and audits. some new, some reworked.</p>
             </span>
             <span className="go" aria-hidden="true">&rarr;</span>
           </Link>

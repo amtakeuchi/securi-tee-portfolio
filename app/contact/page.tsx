@@ -37,8 +37,12 @@ export default function ContactPage() {
           </p>
           <h1>contact</h1>
           <p className="page-lead">
-            something that needs breaking, or holding together? send it over. i read
-            everything and usually reply within a day or two.
+            i&apos;m curious what you&apos;ve got. send it over. i read everything,
+            usually reply within a day or two.
+          </p>
+          <p className="page-quiet">
+            dealing with something active right now? say so in your message and
+            i&apos;ll get to it first.
           </p>
         </header>
 

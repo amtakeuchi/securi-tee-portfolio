@@ -8,7 +8,7 @@ const FILTERS: { key: "all" | Track; label: string }[] = [
   { key: "all", label: "all" },
   { key: "offense", label: "offense" },
   { key: "defense", label: "defense" },
-  { key: "tooling", label: "tooling" },
+  { key: "etc", label: "etc" },
 ];
 
 export function RecentWorkFeed({ writeups }: { writeups: Writeup[] }) {

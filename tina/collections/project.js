@@ -57,7 +57,7 @@ export default {
       type: "string",
       name: "track",
       label: "Track",
-      options: ["offense", "defense", "tooling"],
+      options: ["offense", "defense", "etc"],
     },
     {
       type: "string",

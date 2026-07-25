@@ -74,7 +74,7 @@ function streamGlitch(
 const DECODE_LINES = [
   { key: "name", text: "adam takeuchi.", delay: 1100 },
   { key: "role", text: "cybersecurity analyst.", delay: 1200 },
-  { key: "hook", text: "i break things to learn how they hold, then build them back harder.", delay: 1300 },
+  { key: "hook", text: "i break things to understand them, then build them back better.", delay: 1300 },
 ] as const;
 
 export function Hero({ writeups }: { writeups: Writeup[] }) {
@@ -197,9 +197,9 @@ export function Hero({ writeups }: { writeups: Writeup[] }) {
         </h1>
         <p className="hero-sub scramble-line" ref={subRef}>
           <span className="decode">
-            <span className="sr-only">i break things to learn how they hold, then build them back harder.</span>
+            <span className="sr-only">i break things to understand them, then build them back better.</span>
             <span className="decode-fx" aria-hidden="true" ref={hookFxRef}>
-              i break things to learn how they hold, then build them back harder.
+              i break things to understand them, then build them back better.
             </span>
           </span>
         </p>

@@ -6,7 +6,7 @@ description: 'A personal intelligence dashboard that pulls from 37+ RSS feeds ac
 repoLink: 'https://github.com/amtakeuchi/cyberfeed_v2'
 date: 2026-03-01T00:00:00.000Z
 featured: true
-track: tooling
+track: etc
 proof: 'a dozen sites daily · down to 10 minutes flat'
 cardTitle: 'cyberfeed v2: a personal intelligence dashboard'
 ---

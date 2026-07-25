@@ -20,51 +20,53 @@ export default async function HomePage() {
           </div>
           <div className="pillars">
             <article className="pillar" data-track="offense">
-              <span className="num">01 / offense</span>
+              <span className="num">01 /<br />offense</span>
               <h3>break it first</h3>
               <div>
                 <p className="detail">
-                  pen testing, red team method, vulnerability research.
-                  finding the variant nobody wrote up is the whole point.
+                  pen testing, red team methodology, vulnerability research, and threat
+                  modeling. finding out how to break into the blind spots is the whole point.
                 </p>
                 <p className="tags">
-                  <span>web app</span>
-                  <span>ssrf</span>
-                  <span>xss</span>
                   <span>burp</span>
                   <span>recon</span>
+                  <span>reverse engineering</span>
+                  <span>exploit development</span>
+                  <span>ai pentesting</span>
                 </p>
               </div>
             </article>
             <article className="pillar" data-track="defense">
-              <span className="num">02 / defense</span>
-              <h3>hold the line</h3>
+              <span className="num">02 /<br />defense</span>
+              <h3>build it back</h3>
               <div>
                 <p className="detail">
-                  soc workflow, detection engineering, incident response.
-                  an attack you can detect is an attack you can survive.
+                  soc workflow, detection engineering, incident response, and overall
+                  hardening. detect and defend against the attacks or be destroyed.
                 </p>
                 <p className="tags">
                   <span>siem</span>
+                  <span>soar</span>
                   <span>detection rules</span>
-                  <span>ir playbooks</span>
-                  <span>log analysis</span>
+                  <span>mitre att&amp;ck</span>
+                  <span>incident response</span>
                 </p>
               </div>
             </article>
             <article className="pillar" data-track="etc">
-              <span className="num">03 / etc</span>
-              <h3>build the tools</h3>
+              <span className="num">03 /<br />etc</span>
+              <h3>brainstorm it new</h3>
               <div>
                 <p className="detail">
-                  security tooling and automation. if i do a task twice,
-                  the third time is a script.
+                  tools, automation, scripting, and documentation. if i have to do it
+                  by hand, i&apos;ll make it easier for next time.
                 </p>
                 <p className="tags">
                   <span>python</span>
-                  <span>recon pipelines</span>
+                  <span>osint</span>
+                  <span>pipelines</span>
                   <span>agents</span>
-                  <span>homelab</span>
+                  <span>grc</span>
                 </p>
               </div>
             </article>
@@ -85,14 +87,18 @@ export default async function HomePage() {
           <div className="about-grid">
             <div className="about-copy">
               <p>
-                i&apos;m adam <span className="take">竹内</span> takeuchi. self-taught, building
-                full-time, betting on myself. i&apos;m not writing from the other side of
-                anything. i&apos;m in the middle.
+                i&apos;m adam. school got me in the door, i took it from there. building
+                and breaking full-time. i&apos;m not reporting on this field from a
+                distance. i&apos;m in it, figuring it out as i go.
               </p>
               <p>
-                the days split between two chairs. in one i hunt variants, catalogue
-                bypasses, and write down what the scanner missed. in the other i turn
-                those notes into detections so the next person on shift sees it coming.
+                now, some are good at offense. some are good at defense. few are good
+                at both. fewer still can translate tech talk into plain english, or
+                into language people can act on.
+              </p>
+              <p>
+                i want to know it all. how it works, what it can do, what it can&apos;t
+                do, what breaks it, what it can be reborn as.
               </p>
               <p className="about-quiet">
                 <span className="take" lang="ja">安</span> &middot; security as a profession, security as a way of being.
@@ -101,19 +107,19 @@ export default async function HomePage() {
             <div className="about-facts" aria-label="quick facts">
               <div className="fact">
                 <span className="k">focus</span>
-                <span className="v">appsec / detection</span>
+                <span className="v">web2 + web3 security / soc</span>
               </div>
               <div className="fact">
                 <span className="k">current lab</span>
-                <span className="v">ssrf variant research</span>
+                <span className="v">soc lab with cloud integration, ai-assisted triage</span>
               </div>
               <div className="fact">
                 <span className="k">stack</span>
-                <span className="v">burp, python, siem</span>
+                <span className="v">burp, python, siem, ollama</span>
               </div>
               <div className="fact">
                 <span className="k">status</span>
-                <span className="v">open to analyst roles</span>
+                <span className="v">$ open to offers</span>
               </div>
             </div>
           </div>
@@ -128,7 +134,8 @@ export default async function HomePage() {
             <h2 id="contact-title">contact</h2>
           </div>
           <p className="big">
-            have something that needs <strong>breaking</strong>, or holding together?
+            something <strong>weird</strong>? something <strong>broken</strong>?
+            something you can&apos;t <strong>explain</strong> to anyone else? send it over.
           </p>
           <div className="contact-links">
             <a className="text-link" href="/contact">

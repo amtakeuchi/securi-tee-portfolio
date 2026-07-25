@@ -7,7 +7,7 @@
    reader sees it in context.
    Color: 安 is solid vermillion, dim, atmospheric. the blinking
    cursor is the single cyan pop. everything else is neutral;
-   offense/defense/tooling stay legible through text labels.
+   offense/defense/etc stay legible through text labels.
    Motion: hero entrance is pure CSS and never waits on a CDN.
    GSAP adds scroll-only polish (kanji parallax, gentle section
    finishes). Nothing is opacity-0 gated on scroll.
@@ -559,8 +559,6 @@ section.block { padding-block: var(--s-32); }
 .writeup[data-track="offense"]:active h3 { color: var(--offense); }
 .writeup[data-track="defense"]:hover h3,
 .writeup[data-track="defense"]:active h3 { color: var(--defense); }
-.writeup[data-track="tooling"]:hover h3,
-.writeup[data-track="tooling"]:active h3,
 .writeup[data-track="etc"]:hover h3,
 .writeup[data-track="etc"]:active h3 { color: #FFFFFF; }
 .writeup p { color: var(--muted); font-size: var(--text-sm); margin-top: var(--s-2); max-width: 58ch; }
@@ -724,6 +722,13 @@ section.block { padding-block: var(--s-32); }
   line-height: 1.6;
   color: var(--muted);
   max-width: 52ch;
+}
+.page-quiet {
+  margin-top: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  color: var(--faint);
 }
 
 /* list rows reuse .feed / .writeup from recent work. a plain
@@ -934,6 +939,7 @@ section.block { padding-block: var(--s-32); }
   .section-label { margin-bottom: var(--s-12); }
   .pillar { grid-template-columns: 1fr; gap: var(--s-3); padding-block: var(--s-8); }
   .pillar .detail { grid-column: 1; }
+  .pillar > div { grid-column: 1; }
 }
 
 @media (max-width: 480px) {

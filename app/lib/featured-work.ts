@@ -1,6 +1,6 @@
 import { client } from "../../tina/__generated__/client";
 
-export type Track = "offense" | "defense" | "tooling";
+export type Track = "offense" | "defense" | "etc";
 
 export interface Writeup {
   track: Track;
@@ -12,7 +12,7 @@ export interface Writeup {
   proof: string;
 }
 
-const FALLBACK_TRACK: Track = "tooling";
+const FALLBACK_TRACK: Track = "etc";
 
 export async function getFeaturedWork(limit = 3): Promise<Writeup[]> {
   let posts: Writeup[] = [];
