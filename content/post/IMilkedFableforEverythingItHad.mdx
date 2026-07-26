@@ -11,26 +11,20 @@ Around early/mid-July, I heard Fable was getting pulled from Claude. I'd already
 
 It did eventually get pulled from access, well, easy access anyway. But by then I'd gotten so much out of that window that losing access almost didn't matter anymore, the value was already banked. A few mockups in, I'd had a much worse realization than "I should try this." It was "my actual site looks terrible compared to this."
 
-Auditing the old site instead of just copying the mockup
+### **Auditing the old site instead of just copying the mockup**
 
 I didn't want to just reskin the site to match a mockup and call it done. I ran two things against the existing codebase first: /premortem, which assumes the thing has already failed and works backward to come up with every specific way that could happen, and /ponytail, which reviews code with a lazy-senior-dev lens, the most efficient and elegant fix, not the most impressive one.
 
 That produced a real list, not a vibe. Some of what came out of it:
 
 * The Tina admin route had a no-op middleware wrapper that implied protection it didn't actually provide.
-   
 * CORS on the Tina API proxy was wide open (Access-Control-Allow-Origin: \*) on routes that forward to my content API with a real token.
-   
 * Dead code sitting around: a leftover Cloudinary config block, an unused image-fullscreen component with no keyboard accessibility.
-   
 * A README that was still the generic Tina starter template, saying nothing about my actual site.
-   
 * package.json still named starter-basic.
-   
 * No automated tests, on a security portfolio, which is kind of embarrassing (I did manual ones but still, gotta catch up with the times).
-   
 
-Then the actual rebuild
+### **Then the actual rebuild**
 
 From July 14th to the 25th, this turned into daily work: a full dark design system built from the mockup direction, a hand-rolled text-scramble hero effect, wiring the whole site to TinaCMS content instead of hardcoded placeholders, hardening the CORS policy and deleting the fake middleware, stripping dead code, writing a real README, adding a GitHub Actions CI pipeline with 8 automated checks, and fixing a genuinely non-obvious CSS grid bug where a stale grid-column rule from one breakpoint was bleeding into another. I'd already done a real security audit of the site once (manual review, SAST, DAST), but that was a one-time pass. Now, by creating a pipeline, a regression or bug could be caught the next time the code was touched in any way, not just the last time I looked (if you want the details on that, go find my project post about it).
 
@@ -38,6 +32,6 @@ Somewhere in the middle of all that I also rewrote the actual copy: the hero lin
 
 As an added note, most of the stuff actually was built or edited before Fable was removed from common people's plans, I have the Pro, I feel your pain. I was making sure to use Fable for the higher level tasks, writing copy was all me.
 
-Why I even used Fable
+### **Why I even used Fable**
 
-I didn't reach for Fable because I thought "better model means better code and better website." That's not only like going hunting with a battleship instead of just a hunting rifle, it's also the wrong way to use that model entirely. Fable was never the model I'd turn to for code; frankly, after using Kimi models and other code generators, Fable sucks in my opinion when it comes to creating code. But I wanted to use it because of its advanced reasoning and its ability to execute loops using the tools and skills I already had, and for overall code review using /ponytail. That skill was originally Claude-only, so I modified it to work with other models too (you already know that, haha). But when Fable was potentially going to get taken away for good, or else sealed behind usage costs that you already know will hurt the pockets, I had to use it while I could, and look what it gave me in the end.
+I didn't reach for Fable because I thought "better model means better code and better website." That's like going hunting with a battleship instead of just a hunting rifle, and it's also the wrong way to use that model entirely. Fable was never the model I'd turn to for code; honestly, after using Kimi models and other code generators, Fable sucks in my opinion when it comes to creating code. But I wanted to use it because of its advanced reasoning and its ability to execute loops using the tools and skills I already had, as well as for overall code review using /ponytail. That skill was originally Claude-only, so I modified it to work with other models too (you knew I would, haha). But when Fable was potentially going to get taken away for good, or else sealed behind usage costs that you already know will hurt the pockets, I had to use it while I could, and look what it gave me in the end.
