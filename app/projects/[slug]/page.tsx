@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { client } from "../../../tina/__generated__/client";
@@ -13,6 +14,37 @@ export async function generateStaticParams() {
       .map((edge) => ({ slug: edge.node!._sys.filename }));
   } catch {
     return [];
+  }
+}
+
+interface ProjectPageProps {
+  params: { slug: string };
+}
+
+export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
+  try {
+    const res = await client.queries.project({ relativePath: `${params.slug}.md` });
+    const project = res.data.project;
+    const metadata: Metadata = {
+      title: `${project.title} · securi-tee`,
+      description: project.description ?? undefined,
+    };
+    if (project.thumbnail) {
+      metadata.openGraph = {
+        title: project.title,
+        description: project.description ?? undefined,
+        images: [{ url: project.thumbnail }],
+      };
+      metadata.twitter = {
+        card: "summary_large_image",
+        title: project.title,
+        description: project.description ?? undefined,
+        images: [project.thumbnail],
+      };
+    }
+    return metadata;
+  } catch {
+    return { title: "securi-tee" };
   }
 }
 

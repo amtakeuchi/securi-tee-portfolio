@@ -1,6 +1,11 @@
 import React from "react";
+import type { Metadata } from "next";
 import "./globals.css";
 import { SiteHeader } from "./components/SiteHeader";
+
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.securi-tee.com"),
+};
 
 export default function RootLayout({
   children,
