@@ -2,10 +2,11 @@
 const nextConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: 'http',
-        hostname: 'localhost',
-      },
+      // SSRF fix (vuln-0010): localhost is dev-only and pinned to the Tina dev port,
+      // so the production image optimizer can't be pointed at internal hosts.
+      ...(process.env.NODE_ENV === 'production'
+        ? []
+        : [{ protocol: 'http', hostname: 'localhost', port: '4001' }]),
       {
         protocol: 'https',
         hostname: 'assets.tina.io',
