@@ -1,5 +1,5 @@
 import { createClient } from "tinacms/dist/client";
-import { queries } from "./types";
-export const client = createClient({ url: 'http://localhost:4001/graphql', token: '2ae4faba2fc27d2516585e2cbc55913691989a22', queries,  });
+import { queries } from "./types.js";
+export const client = createClient({ cacheDir: '/Users/hermes/Documents/securi-tee-tinacms/tina/__generated__/.cache/1787527626325', url: 'http://localhost:4001/graphql', token: 'local', queries,  });
 export default client;
   
