@@ -1,0 +1,66 @@
+---
+title: I Got My Hands on an AI Hacker and Aimed It at Myself
+excerpt: |-
+  Strix thinks "securi-tee" means I sell t-shirts, I think I gotta change my name...
+
+  I pointed an autonomous AI hacking tool at my own site and told it to break in. Six agents, one target. It found five real bugs, I fixed them, then I sent it back black-box and it came up empty.
+date: 2026-08-24T06:02:15.966Z
+featuredImage: /uploads/Screenshot-2026-08-25-at-12.51.53-AM.png
+track: offense
+proof: 6 AI agents · 5 bugs fixed · 0 live
+cardTitle: I Let an AI Hack My Own Site
+---
+
+In 2026, AI is absolutely everywhere. Some people are trying to cram it into stuff that doesn't need it, or use it in ways that make absolutely zero sense. But what does matter, and what we should be aware of, is how it can be used for both good and evil in this digital era, more specifically how someone could get their hands on it and use it to bring down your website, your business, or something else of yours.
+
+So, I ran an autonomous AI-driven pentest against my own production portfolio site to see if I had any gaps in my security, before someone with malicious intent did the same to me. And I did it using Strix.
+
+**Uh… what is Strix?** 
+
+It's an open source AI pentest tool. You give it a target, a URL or a folder of source. It plans the attack, runs it, validates findings with working PoCs, and writes up a report. Everything runs in Docker on your machine (I used Colima to save on device resources, in case anyone reading has the same issue). The model behind it is swappable: point it at any LLM endpoint and that model does the thinking.
+
+It ships armed. HTTP interception proxy for request tampering. Automated browser for XSS, CSRF, auth flows. Recon and OSINT for mapping attack surface. Static and dynamic analysis. Shell access. A Python sandbox for custom exploits. Under the hood there is Caido, Nuclei, Playwright, and more. The agents pick tools as they go, same as a person would depending on what they find and the use cases. I had my hacker, but the next problem was the brain. 
+
+My budget for this was basically $0. I did not want to spend crazy money on ChatGPT or Claude or something because I did not know what kind of token burn I was going to be looking at running this test on my site. Thankfully, this week, I was able to get my hands on API keys for a couple of really good, really capable models; Qwen 3.8 Max, and ox-alpha (pretty sure it's a GLM model based off what I've learned). Incredible, flagship level capabilities, reasoning, huge context windows, everything I thought I would want out of an AI to drive this tool. Except neither was accepted off rip.
+
+The reason was that Strix reads the model's content field. Googling for a good while let me know that reasoning models answer in a separate reasoning\_content field and leave content nearly empty, so Strix was hearing silence on its end; no plans, no tool calls, no findings. I had Claude help me cobble together a shim, a small tool sitting between Strix and the model that would copy reasoning\_content into content, passing tool calls through untouched. With a few lines of glue, both models ran cleanly through it. Qwen drove my first pass, and then ox-alpha drove the live attack. Total spend: $0.00 (unless you're counting my $20 USD/month Claude plan, but you could do the same on the web interface of ChatGPT, Kimi, anything really).
+
+**Pass 1: The Code Review**
+
+My target, a local clone of my portfolio site repo. Strix read every file, mapped data flow, and scanned dependencies over the course of about 40 minutes.
+
+The raw output looked brutal; 102 findings, 7 of them flagged critical. But here's the thing about that scary red CRITICAL label: all 7 were dependency CVEs pulled off the whole lockfile, dev packages included, most unreachable from any real code path. Running npm audit put the honest dependency number at 54. The findings that actually mattered weren't in the critical pile at all; they were 5 medium-rated app bugs I had to dig for, and every one was PoC-verified (Proof-of-Concept):
+
+* SSRF via a localhost remotePattern left open in next/image
+* An API proxy route attaching my server-side CMS token for anonymous callers
+* Local dev GraphQL exposed with wildcard CORS and no auth
+* Code execution through ---js frontmatter in the build pipeline
+* Path traversal letting one content collection read or delete another
+
+Now, before you start screaming about how I clearly do not know security if my own site is this bad, every one of those lived in TinaCMS local-dev or CI surface. Prod content goes through Tina Cloud, so none of it ever shipped. Simply, these are not actual bugs unless you're running my repo locally, which I don't in the public eye. I fixed all 5 anyway, on a throwaway clone before touching the real repo, just for the sake of it.
+
+One detail to note though, the first move on the token-leaking proxy route was deletion. My CI on the repo went red inside a minute into deploy because a test validates that exact route's CORS round trip. Pulling the logs up, the endpoint was load-bearing for a contract I had forgotten existed. So instead of removing it, I hardened it; strip my token, forward the caller's own Authorization header, gate localhost CORS to dev. Love that CI pipeline, if you want details on it check it out in my other posts.
+
+Anyways, next was upgrades: Next and TinaCMS went to the latest versions, plus CLI for TinaCMS. Audit count went from 54 down to 14, with the rest being dev-only tooling. The build was green across all 23 pages.
+
+**Pass 2: Live Black-Box**
+
+Same tool, deployed site, no source code provided, about as black-box as could be (no prior information). Rules of engagement were passed to Strix up front: low concurrency, respect rate limits (I don't need to DDoS myself or have my WAF flip out), no brute-force wordlists, bounded crawl depth. Could this be scoped better for more hacker simulation? Sure, but unless someone REALLY wants to clap my site, in which case nothing can stop them, this is gonna block the attempts of basically all attackers. The run honoured all of my scope. 134 requests, 26 minutes.
+
+Strix ran a root agent plus five specialists, each with its own written brief:
+
+* Recon Mapper: fingerprint the stack, crawl every route, inventory forms and parameters, dig through JS bundles for endpoints and secrets
+* Header TLS Auditor: captures headers everywhere, grades TLS protocols and ciphers, parses CSP directive by directive, probes CORS from a foreign origin
+* XSS OpenRedirect Tester: audits shipped JavaScript for DOM sinks, fires marker payloads into query and hash positions, exercises the contact form end to end
+* Next.js Optimizer CVE Checker: pins the exact framework version, tests whether the middleware bypass CVE class applies, throws arbitrary hosts, metadata IPs, and oversized dimensions at the image optimizer
+* TinaCMS Admin Validator: hits admin portal unauthenticated, dissects the admin bundle for embedded credentials, pokes the API stubs with valid queries and wrong methods
+
+Every candidate chain died at its first link. No injection sink means the loose CSP is defeated. No cookies means no session theft. No deployed middleware means the middleware bypass class doesn't apply at all to this. Image optimizer bounced everything with a generic 400 denial. Zero exploitable vulnerabilities.
+
+For the non-monetary costs, this took about 8.7 million input tokens, with 96% (8.4 million of that former figure) served from cache, roughly 81 thousand output tokens. That cache is why a model that can hold context is so important, without an AI model that can keep coherent context through a 26 minute pentest, attacking this site would not have been possible. If you want to duplicate this on your own, pick something with that fact in mind.
+
+**Reading the report:**
+
+If you plan on using this tool yourself, Strix outputs all the findings it gets to files on disk, with the option to email to a work domain email if you open the viewer window on browser (it rejected my personal email so make sure if you use this for a client or something they don't give you a Gmail address). Checking Strix's work, it was clean. Version pins matched mine, header findings matched reality, the 404s were compared against a soft-404 baseline, not guessed. Leftover items were labeled defense-in-depth, no exploit path claimed. That is when clean counts as evidence instead of a missed finding or dumb luck.
+
+What I really liked was the fact that Strix also produced a list of recommendations for hardening, broken into immediate, short-term (hardening), and medium-term. I had nothing to do for the immediate, but I was given some things to do in the short and medium term for hardening; tightening and strengthening certain policies I had, dealing with surface reduction, and working on redirect hygiene as well. Won't get into details here because it's a little too personal, but know that by the time this comes out, everything should be addressed and pushed for further securing my portfolio site.
